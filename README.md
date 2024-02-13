@@ -11,7 +11,7 @@ The main workflow of this project is,
 ## Data preparation
 Satellite images were generated from Sentinel-2, downloaded at [EarthExplorer](https://earthexplorer.usgs.gov/), with spectral information of blue (B2), green (B3), red (B4), near-infrared (NIR, B8). Together with these bands, [NDVI](https://en.wikipedia.org/wiki/Normalized_difference_vegetation_index), [NDBI](https://pro.arcgis.com/en/pro-app/2.8/arcpy/spatial-analyst/ndbi.htm), [NDWI](https://en.wikipedia.org/wiki/Normalized_difference_water_index) were also calculated and put into training. Additionally, we got landcover data and added this as another layer.
 
-Functions defined in this step include `read_file()`, `normalize_by_layer()`, `create_chips()`, `remove_images()`, with detailed explanation shown in the table below. Python scripts are in [1_Data_preparation](https://github.com/mar-koz22/Park-NET-identifying-Urban-parks-using-multi-source-spatial-data-and-Geo-AI/blob/main/Jiawei's-approach/1_Data_preparation.py). 
+Functions defined in this step include `read_file()`, `normalize_by_layer()`, `create_chips()`, `remove_images()`, with detailed explanation shown in the table below. Python scripts are in [1_Data_preparation](https://github.com/Spatial-Data-Science-and-GEO-AI-Lab/UGSU-NET-Identifying-urban-greening-with-U-Net/blob/main/1_Data_preparation.py). 
 
 | Function | Description | Inputs | Parameters set in this study |
 | -------- | ------ | ------- | ---------------------------- |
@@ -24,13 +24,13 @@ Examples of image chip pairs are:
 
 <img src="https://user-images.githubusercontent.com/97944674/174822286-3e415b46-2be7-4ee5-8650-494150aaaa2f.png" width="650" height="325">
 
-Techniques chosen for data augmentation are (1) random rotation within an angle of 45 degrees; (2) random width and height shift within a range of 20%; (3) randomly horizontal and vertical flip; (4) randomly zooming in and out within a range of 20%. The python library used was `ImageDataGenerator`. Python scripts are in [2_Data_augmentation](https://github.com/mar-koz22/Park-NET-identifying-Urban-parks-using-multi-source-spatial-data-and-Geo-AI/blob/main/Jiawei's-approach/2_Data_augmentation.py). Example is shown as
+Techniques chosen for data augmentation are (1) random rotation within an angle of 45 degrees; (2) random width and height shift within a range of 20%; (3) randomly horizontal and vertical flip; (4) randomly zooming in and out within a range of 20%. The python library used was `ImageDataGenerator`. Python scripts are in [2_Data_augmentation](https://github.com/Spatial-Data-Science-and-GEO-AI-Lab/UGSU-NET-Identifying-urban-greening-with-U-Net/blob/main/2_Data_augmentation.py). Example is shown as
 
 <img src="https://user-images.githubusercontent.com/97944674/176749354-3e2c1aaf-7a0c-42e0-9092-94b68ab7e015.png" width="650" height="325">
 
 ## Model training
 ### U-Net model from scratch
-U-Net model from scratch was built in [3_Model_UNet](https://github.com/mar-koz22/Park-NET-identifying-Urban-parks-using-multi-source-spatial-data-and-Geo-AI/blob/main/Jiawei's-approach/3_Model_UNet.py), with the number of filters chosen to be (64, 128, 256, 512, 1024). Due to limited system memory, eight three-bands combinations were used instead of all the 8 layers. Model performance from different combinations are:
+U-Net model from scratch was built in [3_Model_UNet](https://github.com/Spatial-Data-Science-and-GEO-AI-Lab/UGSU-NET-Identifying-urban-greening-with-U-Net/blob/main/3_a_Model_UNet.py), with the number of filters chosen to be (64, 128, 256, 512, 1024). Due to limited system memory, eight three-bands combinations were used instead of all the 8 layers. Model performance from different combinations are:
 
 | Combination of bands | OA     | IoU    | F-score | AUC    |
 | -------------------- | ------ | ------ | ------- | ------ |
@@ -45,7 +45,7 @@ U-Net model from scratch was built in [3_Model_UNet](https://github.com/mar-koz2
 | Average              | 0.8624 | 0.6295 | 0.6645  | 0.7640 |
 
 ### U-Net model with pretrained backbones
-Compared with U-Net model from scrath, a pretrained backbone can increase model performace and make the training converge faster. ResNet-50 and VGG-16 pretrained on ImageNet were used as the encoder part of U-Net model in [3_Model_UNet_with_backbones](https://github.com/mar-koz22/Park-NET-identifying-Urban-parks-using-multi-source-spatial-data-and-Geo-AI/blob/main/Jiawei's-approach/3_Model_UNet_with_backbones.py), with performance on training cities shown as:
+Compared with U-Net model from scrath, a pretrained backbone can increase model performace and make the training converge faster. ResNet-50 and VGG-16 pretrained on ImageNet were used as the encoder part of U-Net model in [3_Model_UNet_with_backbones](https://github.com/Spatial-Data-Science-and-GEO-AI-Lab/UGSU-NET-Identifying-urban-greening-with-U-Net/blob/main/3_b_Model_UNet_with_backbones.py), with performance on training cities shown as:
 
 | Combination of bands |ResNet-50 |        |         |        | VGG-16		|        |         |         |
 | -------------------- | ---------| ------ | ------- | ------ | ----------| ------ | ------- | ------- |
@@ -73,12 +73,12 @@ We also used Washington D.C. as an example to explore where our model performed 
 
 <img src="https://user-images.githubusercontent.com/97944674/176751827-33f024a4-4817-4091-81f9-d87282595fde.png" width="700" height="370">
 
-Python scripts to do this are documented in [4_Prediction_and_save_as_tiff](https://github.com/mar-koz22/Park-NET-identifying-Urban-parks-using-multi-source-spatial-data-and-Geo-AI/blob/main/Jiawei's-approach/4_Prediction_and_save_as_tiff.py). Predictions were made for each image chip, and then predicted chips were merged together to a numpy array. This numpy array then was converted into tiff file using given metadata. Main functions used were `unpatchify` in `patchify` library and the defined `array2raster`.
+Python scripts to do this are documented in [4_Prediction_and_save_as_tiff](https://github.com/Spatial-Data-Science-and-GEO-AI-Lab/UGSU-NET-Identifying-urban-greening-with-U-Net/blob/main/4_Prediction_and_save_as_tiff.py). Predictions were made for each image chip, and then predicted chips were merged together to a numpy array. This numpy array then was converted into tiff file using given metadata. Main functions used were `unpatchify` in `patchify` library and the defined `array2raster`.
 
 ## Multi cities solution
-If you are training model on multiple cities, you can use Google Earth Engine to automatically download satellite images, automatically crop satellite images into chips, and create corresponding chips for masks. Main packages used were `ee` and `gdal`, with scripts shown in [5_Multi_city_solution _with _GEE](https://github.com/mar-koz22/Park-NET-identifying-Urban-parks-using-multi-source-spatial-data-and-Geo-AI/blob/main/Jiawei's-approach/5_Multi_city_solution_with_GEE.py)
+If you are training model on multiple cities, you can use Google Earth Engine to automatically download satellite images, automatically crop satellite images into chips, and create corresponding chips for masks. Main packages used were `ee` and `gdal`, with scripts shown in [5_Multi_city_solution _with _GEE](https://github.com/Spatial-Data-Science-and-GEO-AI-Lab/UGSU-NET-Identifying-urban-greening-with-U-Net/blob/main/5_Multi_city_solution_with_GEE.py)
 
-Examples of the whole training process are shown in the folder of [Notebook](https://github.com/mar-koz22/Park-NET-identifying-Urban-parks-using-multi-source-spatial-data-and-Geo-AI/tree/main/Jiawei's-approach/Notebook).
+Examples of the whole training process are shown in the folder of [Notebook](https://github.com/Spatial-Data-Science-and-GEO-AI-Lab/UGSU-NET-Identifying-urban-greening-with-U-Net/tree/main/Notebook).
 
 ## Main references 
 Literatures:
